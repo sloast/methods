@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:fsrs/fsrs.dart' as fsrs;
+import 'package:methods/core/prefs.dart';
 import 'package:methods/db/repo.dart';
 import 'package:methods/db/static/setup.dart' as static_db_setup;
 import 'package:methods/db/user/database.dart' show UserDatabase;
 import 'package:methods/ui/home.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferencesWithCache.create(cacheOptions: .new());
+  final prefs = await Prefs.create();
   runApp(
     MultiProvider(
       providers: [

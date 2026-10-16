@@ -105,6 +105,7 @@ class DiagramContainer extends StatelessWidget {
     required this.insideBells,
     required this.leadLength,
     this.drawNums = true,
+    this.drawLeadEnds = true,
     this.hideTreble = false,
     this.scale = 1.0,
   });
@@ -114,6 +115,7 @@ class DiagramContainer extends StatelessWidget {
   final List<int> insideBells;
   final int leadLength;
   final bool drawNums;
+  final bool drawLeadEnds;
   final bool hideTreble;
   final double scale;
 
@@ -132,6 +134,7 @@ class DiagramContainer extends StatelessWidget {
             insideBells: insideBells,
             leadLength: leadLength,
             drawNums: drawNums,
+            drawLeadEnds: drawLeadEnds,
             hideTreble: hideTreble,
             alpha: scale,
           ),
@@ -148,6 +151,7 @@ class MethodPainter extends CustomPainter {
     required this.insideBells,
     required this.leadLength,
     required this.drawNums,
+    required this.drawLeadEnds,
     required this.hideTreble,
     required this.alpha,
   });
@@ -157,6 +161,7 @@ class MethodPainter extends CustomPainter {
   final List<int> insideBells;
   final int leadLength;
   final bool drawNums;
+  final bool drawLeadEnds;
   final bool hideTreble;
   final double alpha;
 
@@ -225,7 +230,7 @@ class MethodPainter extends CustomPainter {
     }
 
     // horizontal lines at lead end
-    if (leadLength > 0) {
+    if (drawLeadEnds && leadLength > 0) {
       paint.color =
           Color.lerp(Colors.black, Colors.white, alpha) ?? Colors.white;
       for (int i = leadLength; i < method.length - 1; i += leadLength) {

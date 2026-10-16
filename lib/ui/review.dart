@@ -4,8 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fsrs/fsrs.dart' as fsrs;
+import 'package:methods/core/prefs.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/method.dart';
 import '../core/model.dart';
@@ -263,7 +263,7 @@ class DrawBlueline extends StatefulWidget {
 }
 
 class _DrawBluelineState extends State<DrawBlueline> {
-  late final SharedPreferencesWithCache prefs = context.read();
+  late final Prefs prefs = context.read();
 
   final FocusNode _focusNode = FocusNode();
   late final _scrollController = ScrollController();
@@ -283,8 +283,16 @@ class _DrawBluelineState extends State<DrawBlueline> {
     }
   }
 
+  void error() {
+    HapticFeedback.heavyImpact();
+    setState(() {
+      errors++;
+    });
+  }
+
   bool input(int direction) {
     if (step >= rows.length - 1) {
+      error();
       return false;
     }
     final int pos = rows[step].indexOf(widget.placeBell);
@@ -293,16 +301,13 @@ class _DrawBluelineState extends State<DrawBlueline> {
     if (next < 0 ||
         next >= row.length ||
         row.elementAtOrNull(next) != widget.placeBell) {
-      HapticFeedback.errorNotification();
-      setState(() {
-        errors++;
-      });
+      error();
       return false;
     }
     setState(() {
       step++;
     });
-    if (step == rows.length - 1) {
+    if (step == rows.length - 1 && prefs.autoFinish) {
       Future.delayed(.new(milliseconds: 250), () {
         widget.onDone(errors);
       });
@@ -395,7 +400,8 @@ class _DrawBluelineState extends State<DrawBlueline> {
                             ? widget.method.length
                             : 0,
                         drawNums: false,
-                        hideTreble: prefs.getBool('hideTreble') ?? false,
+                        drawLeadEnds: prefs.autoFinish,
+                        hideTreble: prefs.hideTreble,
                       ),
                     ],
                   ),
@@ -430,7 +436,29 @@ class _DrawBluelineState extends State<DrawBlueline> {
               expand: false,
             ),
           ),
-          SizedBox(height: 100),
+          SizedBox(
+            height: 100,
+            child: prefs.autoFinish
+                ? null
+                : Padding(
+                    padding: .only(top: 25),
+                    child: OutlinedButton(
+                      style: .new(
+                        shape: .all(
+                          RoundedRectangleBorder(borderRadius: .circular(20)),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (step == rows.length - 1) {
+                          widget.onDone(errors);
+                        } else {
+                          error();
+                        }
+                      },
+                      child: Text('Done'),
+                    ),
+                  ),
+          ),
         ],
       ),
     );

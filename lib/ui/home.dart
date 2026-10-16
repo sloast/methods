@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart' as fuzzy;
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:methods/core/model.dart';
+import 'package:methods/core/prefs.dart';
 import 'package:methods/db/user/database.dart' as udb;
 import 'package:methods/ui/method.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../db/repo.dart';
 import '../util/util.dart';
@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       ];
 
   late final Repository repo = context.read();
-  late final SharedPreferencesWithCache prefs = context.read();
+  late final Prefs prefs = context.read();
 
   late final allMethods = repo.searchMethods("", limit: 99999);
   final searchController = TextEditingController();
@@ -286,10 +286,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 ),
                 SwitchListTile(
                   title: Text("Hide treble line"),
-                  value: prefs.getBool('hideTreble') ?? false,
-                  onChanged: (v) => setState(() {
-                    prefs.setBool('hideTreble', v);
-                  }),
+                  value: prefs.hideTreble,
+                  onChanged: (v) => setState(() => prefs.hideTreble = v),
+                ),
+                SwitchListTile(
+                  title: Text("Auto finish review"),
+                  value: prefs.autoFinish,
+                  onChanged: (v) => setState(() => prefs.autoFinish = v),
                 ),
               ],
             ),

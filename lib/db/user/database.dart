@@ -66,8 +66,11 @@ class UserDatabase extends _$UserDatabase {
 
   // Queries
 
-  Expression<bool> get cardFilter =>
-      cards.due.isSmallerOrEqualValue(DateTime.now()) & cards.paused.not();
+  Expression<bool> get cardFilter {
+    final now = DateTime.now();
+    final time = DateTime(now.year, now.month, now.day).add(Duration(days: 1));
+    return cards.due.isSmallerThanValue(time) & cards.paused.not();
+  }
 
   Future<(Card, Deck)?> nextCard({bool unlearned = true}) async {
     final query =

@@ -186,7 +186,7 @@ class Repository {
           type: .placeBell,
           placeBell: x,
           paused: false,
-          learned: true, // TODO
+          learned: true,
         ),
       ),
     );

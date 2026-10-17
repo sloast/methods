@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart' as fuzzy;
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -253,35 +253,36 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         );
                       },
                     ),
-
-                    OutlinedButton.icon(
-                      icon: Icon(Icons.delete_forever),
-                      label: Text('Delete all data'),
-                      onPressed: () async {
-                        if (await yesNoDialog(
-                          context,
-                          'Reset Database?',
-                          Text(
-                            'Do not press yes unless you know what you are doing!',
-                          ),
-                        )) {
-                          repo.udb.reset();
-                        }
-                      },
-                    ),
-                    OutlinedButton.icon(
-                      icon: Icon(Icons.add),
-                      label: Text('Add custom method'),
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(builder: (ctx) => EditPage()),
-                            )
-                            .then((b) {
-                              if (b == true) reload();
-                            });
-                      },
-                    ),
+                    if (kDebugMode)
+                      OutlinedButton.icon(
+                        icon: Icon(Icons.delete_forever),
+                        label: Text('Delete all data'),
+                        onPressed: () async {
+                          if (await yesNoDialog(
+                            context,
+                            'Reset Database?',
+                            Text(
+                              'Do not press yes unless you know what you are doing!',
+                            ),
+                          )) {
+                            repo.udb.reset();
+                          }
+                        },
+                      ),
+                    if (kDebugMode)
+                      OutlinedButton.icon(
+                        icon: Icon(Icons.add),
+                        label: Text('Add custom method'),
+                        onPressed: () {
+                          Navigator.of(context)
+                              .push(
+                                MaterialPageRoute(builder: (ctx) => EditPage()),
+                              )
+                              .then((b) {
+                                if (b == true) reload();
+                              });
+                        },
+                      ),
                   ],
                 ),
                 SwitchListTile(

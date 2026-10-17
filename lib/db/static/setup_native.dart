@@ -35,10 +35,6 @@ StaticDatabase setup() {
     driftDatabase(
       name: 'methods_library',
       native: DriftNativeOptions(databasePath: _setupConnection),
-      web: DriftWebOptions(
-        sqlite3Wasm: Uri.parse('sqlite3.wasm'),
-        driftWorker: Uri.parse('drift_worker.js'),
-      ),
     ),
   );
 }

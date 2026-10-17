@@ -2,7 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Prefs {
   static Future<Prefs> create() async {
-    return Prefs(await SharedPreferencesWithCache.create(cacheOptions: .new()));
+    return Prefs(await .create(cacheOptions: .new()));
   }
 
   const Prefs(this.prefs);

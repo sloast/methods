@@ -1,0 +1,19 @@
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+
+  android: "ic_launcher_foreground"
+  image_path_android: "assets/icon/icon_padded.png"
+  min_sdk_android: 21
+
+  ios: true
+  remove_alpha_ios: true
+
+  web:
+    generate: true
+
+  windows:
+    generate: true
+    icon_size: 48
+
+  macos:
+    generate: true

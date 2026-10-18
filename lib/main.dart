@@ -9,19 +9,42 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await Prefs.create();
-  runApp(
-    MultiProvider(
-      providers: [
-        Provider(
-          create: (_) => Repository(UserDatabase(), static_db_setup.setup()),
+  try {
+    final prefs = await Prefs.create();
+
+    runApp(
+      MultiProvider(
+        providers: [
+          Provider(
+            create: (_) => Repository(UserDatabase(), static_db_setup.setup()),
+          ),
+          Provider(create: (_) => fsrs.Scheduler()),
+          Provider(create: (_) => prefs),
+        ],
+        child: MyApp(),
+      ),
+    );
+  } catch (e, s) {
+    runApp(
+      MaterialApp(
+        home: Scaffold(
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Text(
+                'Error during initialisation: $e\n$s',
+                style: .new(
+                  color: Colors.red,
+                  fontFamily: 'monospace',
+                  fontFamilyFallback: <String>["Courier"],
+                ),
+              ),
+            ),
+          ),
         ),
-        Provider(create: (_) => fsrs.Scheduler()),
-        Provider(create: (_) => prefs),
-      ],
-      child: MyApp(),
-    ),
-  );
+      ),
+    );
+    rethrow;
+  }
 }
 
 class MyApp extends StatelessWidget {

@@ -76,7 +76,7 @@ class UserDatabase extends _$UserDatabase {
     final query =
         select(cards).join([innerJoin(decks, decks.id.equalsExp(cards.deck))])
           ..where(unlearned ? cardFilter : cardFilter & cards.learned)
-          ..orderBy([OrderingTerm.asc(cards.due)])
+          ..orderBy([OrderingTerm.asc(cards.lastReview, nulls: .first)])
           ..limit(1);
     final result = await query.getSingleOrNull();
     if (result == null) return null;

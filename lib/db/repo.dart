@@ -13,6 +13,8 @@ class Repository {
 
   Repository(this.udb, this.sdb);
 
+  Future<void> close() => Future.wait([udb.close(), sdb.close()]);
+
   // Method
 
   Future<List<m.Method>> listMethods() async {

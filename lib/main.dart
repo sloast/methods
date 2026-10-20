@@ -15,11 +15,12 @@ void main() async {
     runApp(
       MultiProvider(
         providers: [
-          Provider(
+          Provider<Repository>(
             create: (_) => Repository(UserDatabase(), static_db_setup.setup()),
+            dispose: (_, db) => db.close(),
           ),
-          Provider(create: (_) => fsrs.Scheduler()),
-          Provider(create: (_) => prefs),
+          Provider<fsrs.Scheduler>(create: (_) => fsrs.Scheduler()),
+          Provider<Prefs>(create: (_) => prefs),
         ],
         child: MyApp(),
       ),

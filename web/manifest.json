@@ -1,11 +1,11 @@
 {
-    "name": "methods",
-    "short_name": "methods",
+    "name": "Methods",
+    "short_name": "Methods",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "An app for learning change ringing methods.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

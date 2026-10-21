@@ -137,6 +137,7 @@ class DiagramContainer extends StatelessWidget {
             drawLeadEnds: drawLeadEnds,
             hideTreble: hideTreble,
             alpha: scale,
+            colorScheme: Theme.of(context).colorScheme,
           ),
         ),
       ),
@@ -154,6 +155,7 @@ class MethodPainter extends CustomPainter {
     required this.drawLeadEnds,
     required this.hideTreble,
     required this.alpha,
+    required this.colorScheme,
   });
 
   final List<List<int>> method;
@@ -164,6 +166,7 @@ class MethodPainter extends CustomPainter {
   final bool drawLeadEnds;
   final bool hideTreble;
   final double alpha;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -202,8 +205,12 @@ class MethodPainter extends CustomPainter {
       final textPainter = TextPainter(textDirection: .ltr);
       final textStyle = TextStyle(
         color:
-            Color.lerp(Colors.transparent, Colors.white, alpha * 2 - 1) ??
-            Colors.white,
+            Color.lerp(
+              Colors.transparent,
+              colorScheme.onSurface,
+              alpha * 2 - 1,
+            ) ??
+            colorScheme.onSurface,
         fontSize: scale * 0.75,
         fontWeight: .w400,
       );
@@ -232,7 +239,8 @@ class MethodPainter extends CustomPainter {
     // horizontal lines at lead end
     if (drawLeadEnds && leadLength > 0) {
       paint.color =
-          Color.lerp(Colors.black, Colors.white, alpha) ?? Colors.white;
+          Color.lerp(Colors.transparent, colorScheme.onSurface, alpha) ??
+          colorScheme.onSurface;
       for (int i = leadLength; i < method.length - 1; i += leadLength) {
         final y = yinc * i;
         path.moveTo(0, y);
@@ -299,17 +307,17 @@ class MethodPainter extends CustomPainter {
       Colors.green,
       Colors.amber,
       Colors.orange.shade700,
-      Colors.deepPurple,
+      Colors.deepPurpleAccent,
       Colors.teal,
-      Colors.yellow.shade200,
       Colors.cyan.shade200,
+      Colors.yellow,
       Colors.lightGreen.shade300,
       Colors.brown,
       Colors.green.shade900,
       Colors.purple,
-      Colors.lime,
       Colors.red,
       Colors.indigo,
+      Colors.lime,
       Colors.deepOrange,
     ];
 

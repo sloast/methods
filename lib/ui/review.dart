@@ -131,16 +131,17 @@ class _ReviewPageState extends State<ReviewPage> {
                         ),
                       ),
                     ),
-                    OutlinedButton(
+                    FilledButton.tonalIcon(
                       style: OutlinedButton.styleFrom(
                         minimumSize: Size(120, 60),
                         shape: RoundedRectangleBorder(
-                          borderRadius: .all(.circular(10)),
+                          borderRadius: .all(.circular(15)),
                         ),
                         textStyle: context.textTheme.labelLarge,
                       ),
                       onPressed: () => review(scheduler),
-                      child: Text('Continue'),
+                      icon: Icon(Icons.check),
+                      label: Text('Continue'),
                     ),
                     Container(
                       alignment: .center,
@@ -157,7 +158,7 @@ class _ReviewPageState extends State<ReviewPage> {
                             .easy => Colors.blue.shade400,
                           },
                           shape: RoundedRectangleBorder(
-                            borderRadius: .all(.circular(10)),
+                            borderRadius: .all(.circular(15)),
                           ),
                         ),
                         selected: .of([rating]),
@@ -376,8 +377,6 @@ class _DrawBluelineState extends State<DrawBlueline> {
                   top: max(constraints.maxHeight - 250, 0),
                 ),
                 controller: _scrollController,
-                // reverse: true,
-                // physics: NeverScrollableScrollPhysics(),
                 children: [
                   Column(
                     crossAxisAlignment: .center,

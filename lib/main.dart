@@ -56,7 +56,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Methods',
       theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.purple, brightness: .dark),
+        colorScheme: .fromSeed(
+          seedColor: Colors.indigo,
+          brightness: .dark,
+          dynamicSchemeVariant: .expressive,
+        ),
         cardTheme: .new(clipBehavior: .antiAlias),
       ),
       home: const MyHomePage(),

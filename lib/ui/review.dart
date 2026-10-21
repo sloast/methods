@@ -307,7 +307,7 @@ class _DrawBluelineState extends State<DrawBlueline> {
     setState(() {
       step++;
     });
-    if (step == rows.length - 1 && prefs.autoFinish) {
+    if (step == rows.length - 1 && !prefs.manualFinish) {
       Future.delayed(.new(milliseconds: 250), () {
         widget.onDone(errors);
       });
@@ -400,7 +400,7 @@ class _DrawBluelineState extends State<DrawBlueline> {
                             ? widget.method.length
                             : 0,
                         drawNums: false,
-                        drawLeadEnds: prefs.autoFinish,
+                        drawLeadEnds: !prefs.manualFinish,
                         hideTreble: prefs.hideTreble,
                       ),
                     ],
@@ -438,9 +438,8 @@ class _DrawBluelineState extends State<DrawBlueline> {
           ),
           SizedBox(
             height: 100,
-            child: prefs.autoFinish
-                ? null
-                : Padding(
+            child: prefs.manualFinish
+                ? Padding(
                     padding: .only(top: 25),
                     child: OutlinedButton(
                       style: .new(
@@ -457,7 +456,8 @@ class _DrawBluelineState extends State<DrawBlueline> {
                       },
                       child: Text('Done'),
                     ),
-                  ),
+                  )
+                : null,
           ),
         ],
       ),

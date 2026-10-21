@@ -9,8 +9,8 @@ class Prefs {
 
   final SharedPreferencesWithCache prefs;
 
-  bool get autoFinish => prefs.getBool('autoFinish') ?? false;
-  set autoFinish(bool value) => prefs.setBool('autoFinish', value);
+  bool get manualFinish => prefs.getBool('manualFinish') ?? false;
+  set manualFinish(bool value) => prefs.setBool('manualFinish', value);
 
   bool get hideTreble => prefs.getBool('hideTreble') ?? false;
   set hideTreble(bool value) => prefs.setBool('hideTreble', value);

@@ -11,7 +11,7 @@ void error(BuildContext ctx, String text) => snackbar(ctx, text);
 Widget list<T>(
   Future<List<T>> future,
   Widget Function(T) f, {
-  bool expanded = true,
+  bool expanded = false,
   Widget Function()? ifEmpty,
 }) {
   final fb = FutureBuilder(

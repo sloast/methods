@@ -128,7 +128,6 @@ class _DeckViewPageState extends State<DeckViewPage> {
             onTap: () => showCardInfo(context, c),
           ),
         ),
-        expanded: false,
       ),
     );
   }

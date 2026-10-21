@@ -105,6 +105,179 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    // Decks
+    final decksPage = list(
+      decks,
+      t2<MethodDeck, int, Widget>(
+        (d, i) => Card(
+          child: ListTile(
+            leading: Icon(Icons.my_library_books_outlined),
+            title: Text(d.name),
+            subtitle: Text(
+              "$i to review",
+              style: .new(
+                color: switch (i) {
+                  0 => Colors.grey,
+                  _ => Colors.greenAccent,
+                },
+              ),
+            ),
+            onTap: () async {
+              final m = await repo.getMethodFromDeck(d);
+              if (context.mounted) {
+                if (m != null) {
+                  context.push((_) => MethodViewPage(method: m));
+                } else {
+                  error(context, 'Method not found');
+                }
+              }
+            },
+            trailing: IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () =>
+                  context.push((_) => DeckViewPage(deck: d)).then(reload),
+            ),
+          ),
+        ),
+      ),
+      ifEmpty: () => Center(
+        child: Text(
+          "You don't have any decks.\nGo to Methods and press the + next to a method to start learning.",
+          textAlign: .center,
+        ),
+      ),
+    );
+
+    // Methods
+    final methodsPage = list(
+      methods,
+      (m) => Card(
+        child: ListTile(
+          title: Text(m.name),
+          onTap: () async => Navigator.of(context)
+              .push(
+                MaterialPageRoute(builder: (ctx) => MethodViewPage(method: m)),
+              )
+              .then(reload),
+          trailing: IconButton(
+            onPressed: () async {
+              await repo.createDeck(m);
+              if (context.mounted) {
+                snackbar(context, "Created deck for ${m.name}");
+              }
+              reload();
+            },
+            icon: Icon(Icons.add_rounded),
+          ),
+        ),
+      ),
+    );
+
+    // Settings
+    Widget header(String text) => Container(
+      padding: .only(left: 16, top: 16),
+      child: Text(
+        text,
+        style: context.textTheme.titleMedium?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        textAlign: .start,
+      ),
+    );
+
+    Widget actionButton({
+      required IconData icon,
+      required String label,
+      required void Function()? onPressed,
+    }) => FilledButton.tonalIcon(
+      icon: Icon(icon),
+      label: Text(label),
+      onPressed: onPressed,
+    );
+
+    final settingsPage = Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        header("Reviewing"),
+        SwitchListTile(
+          title: Text("Hide treble line"),
+          subtitle: Text("Treble line will only be shown when nearby"),
+          value: prefs.hideTreble,
+          onChanged: (v) => setState(() => prefs.hideTreble = v),
+        ),
+        SwitchListTile(
+          title: Text("Manually finish reviews"),
+          subtitle: Text('Tests that you know where each place bell ends'),
+          value: prefs.manualFinish,
+          onChanged: (v) => setState(() => prefs.manualFinish = v),
+        ),
+
+        // Actions
+        header("Actions"),
+        Container(
+          padding: .all(16),
+          child: Wrap(
+            alignment: .start,
+            spacing: 16,
+            runSpacing: 16,
+            children: [
+              actionButton(
+                icon: Icons.download,
+                label: "Import",
+                onPressed: () async {
+                  final file = await FilePicker.pickFile(
+                    dialogTitle: "Import methods.sqlite...",
+                  );
+                  if (file == null) return;
+                  final data = await file.readAsBytes();
+                  await repo.udb.import(data);
+                  repo.udb = udb.UserDatabase();
+                },
+              ),
+              actionButton(
+                icon: Icons.upload,
+                label: "Export",
+                onPressed: () async {
+                  await FilePicker.saveFile(
+                    fileName: 'methods.sqlite',
+                    bytes: await repo.udb.export(),
+                  );
+                },
+              ),
+              if (kDebugMode)
+                actionButton(
+                  icon: Icons.delete_forever,
+                  label: "Delete all data",
+                  onPressed: () async {
+                    if (await yesNoDialog(
+                      context,
+                      "Reset Database?",
+                      Text(
+                        "Do not press yes unless you know what you are doing!",
+                      ),
+                    )) {
+                      repo.udb.reset();
+                    }
+                  },
+                ),
+              if (kDebugMode)
+                actionButton(
+                  icon: Icons.add,
+                  label: "Add custom method",
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (ctx) => EditPage()))
+                        .then((b) {
+                          if (b == true) reload();
+                        });
+                  },
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -129,176 +302,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             : Text(destinations[currentPageIndex].label),
       ),
       body: SafeArea(
-        child: [
-          // Decks
-          Center(
-            child: Column(
-              children: [
-                list(
-                  decks,
-                  t2<MethodDeck, int, Widget>(
-                    (d, i) => Card(
-                      child: ListTile(
-                        leading: Icon(Icons.my_library_books_outlined),
-                        title: Text(d.name),
-                        onTap: () async {
-                          final m = await repo.getMethodFromDeck(d);
-                          if (context.mounted) {
-                            if (m != null) {
-                              context.push((_) => MethodViewPage(method: m));
-                            } else {
-                              error(context, 'Method not found');
-                            }
-                          }
-                        },
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "$i",
-                              style: context.textTheme.titleMedium?.copyWith(
-                                color: switch (i) {
-                                  0 => Colors.grey,
-                                  _ => Colors.greenAccent,
-                                },
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.settings),
-                              onPressed: () => context
-                                  .push((_) => DeckViewPage(deck: d))
-                                  .then(reload),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  ifEmpty: () => Center(
-                    child: Text(
-                      "You don't have any decks.\nGo to Methods and press the + next to a method to start learning.",
-                      textAlign: .center,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Methods
-          Center(
-            child: Column(
-              children: [
-                list(
-                  methods,
-                  (m) => Card(
-                    child: ListTile(
-                      title: Text(m.name),
-                      onTap: () async => Navigator.of(context)
-                          .push(
-                            MaterialPageRoute(
-                              builder: (ctx) => MethodViewPage(method: m),
-                            ),
-                          )
-                          .then(reload),
-                      trailing: IconButton(
-                        onPressed: () async {
-                          await repo.createDeck(m);
-                          if (context.mounted) {
-                            snackbar(context, "Created deck for ${m.name}");
-                          }
-                          reload();
-                        },
-                        icon: Icon(Icons.add_rounded),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Settings
-          Container(
-            alignment: .center,
-            padding: .all(10),
-            child: Column(
-              spacing: 10,
-              children: [
-                Wrap(
-                  alignment: .center,
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    OutlinedButton.icon(
-                      icon: Icon(Icons.download),
-                      label: Text('Import'),
-                      onPressed: () async {
-                        final file = await FilePicker.pickFile(
-                          dialogTitle: 'Import methods.sqlite...',
-                        );
-                        if (file == null) return;
-                        final data = await file.readAsBytes();
-                        await repo.udb.import(data);
-                        repo.udb = udb.UserDatabase();
-                      },
-                    ),
-                    OutlinedButton.icon(
-                      icon: Icon(Icons.upload),
-                      label: Text('Export'),
-                      onPressed: () async {
-                        await FilePicker.saveFile(
-                          fileName: 'methods.sqlite',
-                          bytes: await repo.udb.export(),
-                        );
-                      },
-                    ),
-                    if (kDebugMode)
-                      OutlinedButton.icon(
-                        icon: Icon(Icons.delete_forever),
-                        label: Text('Delete all data'),
-                        onPressed: () async {
-                          if (await yesNoDialog(
-                            context,
-                            'Reset Database?',
-                            Text(
-                              'Do not press yes unless you know what you are doing!',
-                            ),
-                          )) {
-                            repo.udb.reset();
-                          }
-                        },
-                      ),
-                    if (kDebugMode)
-                      OutlinedButton.icon(
-                        icon: Icon(Icons.add),
-                        label: Text('Add custom method'),
-                        onPressed: () {
-                          Navigator.of(context)
-                              .push(
-                                MaterialPageRoute(builder: (ctx) => EditPage()),
-                              )
-                              .then((b) {
-                                if (b == true) reload();
-                              });
-                        },
-                      ),
-                  ],
-                ),
-                SwitchListTile(
-                  title: Text("Hide treble line"),
-                  value: prefs.hideTreble,
-                  onChanged: (v) => setState(() => prefs.hideTreble = v),
-                ),
-                SwitchListTile(
-                  title: Text("Auto finish review"),
-                  value: prefs.autoFinish,
-                  onChanged: (v) => setState(() => prefs.autoFinish = v),
-                ),
-              ],
-            ),
-          ),
-        ][currentPageIndex],
+        child: [decksPage, methodsPage, settingsPage][currentPageIndex],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => (context.push((ctx) => ReviewPage()).then(reload),),

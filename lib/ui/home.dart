@@ -105,6 +105,41 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    Widget stageIcon(int stage, {Widget? child}) => DecoratedBox(
+      decoration: BoxDecoration(
+        color: switch (stage) {
+          3 => Colors.pink.shade200,
+          4 => Colors.purple,
+          5 => Colors.indigoAccent,
+          6 => Colors.blue,
+          7 => Colors.cyan,
+          8 => Colors.green.shade600,
+          9 => Colors.lightGreen.shade300,
+          10 => Colors.yellow,
+          11 => Colors.orange,
+          12 => Colors.red,
+          _ => Colors.grey,
+        },
+        borderRadius: .circular(8),
+      ),
+      child: SizedBox.square(
+        dimension: 32,
+        child: Center(
+          child:
+              child ??
+              Text(
+                '$stage',
+                textAlign: .center,
+                style: .new(
+                  fontSize: 18,
+                  fontWeight: .w900,
+                  color: Colors.black,
+                ),
+              ),
+        ),
+      ),
+    );
+
     // Decks
     final decksPage = list(
       decks,
@@ -153,6 +188,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       methods,
       (m) => Card(
         child: ListTile(
+          leading: stageIcon(m.stage),
           title: Text(m.name),
           onTap: () async => Navigator.of(context)
               .push(

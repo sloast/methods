@@ -57,7 +57,7 @@ class _EditPageState extends State<EditPage> {
         }
       } catch (e) {
         if (!context.mounted) return;
-        error(context, e.toString());
+        error(context, e);
         return;
       }
     }

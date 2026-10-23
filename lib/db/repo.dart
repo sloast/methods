@@ -1,10 +1,10 @@
 import 'package:drift/drift.dart';
 import 'package:fsrs/fsrs.dart' as fsrs;
-import 'package:methods/core/method.dart';
-import 'package:methods/db/static/database.dart' as s;
 
-import '../util/util.dart';
+import '../core/method.dart';
 import '../core/model.dart' as m;
+import '../util/util.dart';
+import 'static/database.dart' as s;
 import 'user/database.dart';
 
 class Repository {

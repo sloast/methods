@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-void snackbar(BuildContext ctx, String text) {
-  ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text(text)));
+void snackbar(BuildContext context, String text) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
 }
 
-void error(BuildContext ctx, String text) => snackbar(ctx, text);
+void error(BuildContext context, dynamic e) => snackbar(context, e.toString());
 
 Widget list<T>(
   Future<List<T>> future,

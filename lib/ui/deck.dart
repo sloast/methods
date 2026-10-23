@@ -68,7 +68,7 @@ class _DeckViewPageState extends State<DeckViewPage> {
                       if (context.mounted) Navigator.pop(context);
                     }
                   } catch (e) {
-                    if (context.mounted) error(context, e.toString());
+                    if (context.mounted) error(context, e);
                   }
                 },
               ),

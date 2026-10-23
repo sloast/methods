@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
@@ -7,7 +8,7 @@ import 'package:fuzzywuzzy/fuzzywuzzy.dart' as fuzzy;
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:methods/core/model.dart';
 import 'package:methods/core/prefs.dart';
-import 'package:methods/db/user/database.dart' as udb;
+import 'package:methods/db/json.dart';
 import 'package:methods/ui/method.dart';
 import 'package:provider/provider.dart';
 
@@ -261,41 +262,48 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 icon: Icons.download,
                 label: "Import",
                 onPressed: () async {
-                  final file = await FilePicker.pickFile(
-                    dialogTitle: "Import methods.sqlite...",
-                  );
-                  if (file == null) return;
-                  final data = await file.readAsBytes();
-                  await repo.udb.import(data);
-                  repo.udb = udb.UserDatabase();
+                  try {
+                    final file = await FilePicker.pickFile(
+                      dialogTitle: "Import methods.json...",
+                    );
+                    if (file == null) return;
+                    await repo.udb.importJson(
+                      await utf8.decodeStream(file.readAsByteStream()),
+                    );
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    error(context, e);
+                  }
                 },
               ),
               actionButton(
                 icon: Icons.upload,
                 label: "Export",
                 onPressed: () async {
-                  await FilePicker.saveFile(
-                    fileName: 'methods.sqlite',
-                    bytes: await repo.udb.export(),
-                  );
+                  try {
+                    await FilePicker.saveFile(
+                      fileName: 'methods.json',
+                      bytes: utf8.encode(await repo.udb.exportJson()),
+                    );
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    error(context, e);
+                  }
                 },
               ),
-              if (kDebugMode)
-                actionButton(
-                  icon: Icons.delete_forever,
-                  label: "Delete all data",
-                  onPressed: () async {
-                    if (await yesNoDialog(
-                      context,
-                      "Reset Database?",
-                      Text(
-                        "Do not press yes unless you know what you are doing!",
-                      ),
-                    )) {
-                      repo.udb.reset();
-                    }
-                  },
-                ),
+              actionButton(
+                icon: Icons.delete_forever,
+                label: "Delete all data",
+                onPressed: () async {
+                  if (await yesNoDialog(
+                    context,
+                    "Reset Database?",
+                    Text("This will delete all of your saved progress."),
+                  )) {
+                    repo.udb.reset();
+                  }
+                },
+              ),
               if (kDebugMode)
                 actionButton(
                   icon: Icons.add,

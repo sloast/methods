@@ -10,11 +10,15 @@ import '../db/repo.dart';
 import '../ui/diagram.dart';
 
 class MethodViewPage extends StatefulWidget {
-  MethodViewPage({super.key, required this.method});
+  MethodViewPage({super.key, required Method method})
+    : method = method,
+      methodData = method.data;
+  MethodViewPage.library({super.key, required this.methodData}) : method = null;
 
-  final Method method;
+  final Method? method;
+  final MethodData methodData;
   late final ParsedMethod parsedMethod = parsePlaceNotation(
-    method.placeNotation,
+    methodData.placeNotation,
   );
 
   @override
@@ -29,7 +33,7 @@ class _MethodViewPageState extends State<MethodViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.method.name),
+        title: Text(widget.methodData.name),
         actions: [
           MenuAnchor(
             animated: true,
@@ -41,7 +45,7 @@ class _MethodViewPageState extends State<MethodViewPage> {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (ctx) => PracticePage(method: widget.method),
+                      builder: (ctx) => PracticePage(method: widget.methodData),
                     ),
                   );
                 },
@@ -51,20 +55,26 @@ class _MethodViewPageState extends State<MethodViewPage> {
                 leadingIcon: Icon(Icons.add),
                 child: Text('Create deck'),
                 onPressed: () async {
-                  await repo.createDeck(widget.method);
+                  await repo.createDeck(
+                    widget.methodData,
+                    methodId: widget.method?.id,
+                  );
                   if (context.mounted) {
-                    snackbar(context, "Created deck for ${widget.method.name}");
+                    snackbar(
+                      context,
+                      "Created deck for ${widget.methodData.name}",
+                    );
                   }
                 },
               ),
 
-              if (widget.method.isCustomMethod)
+              if (widget.methodData.libraryId == null && widget.method != null)
                 MenuItemButton(
                   leadingIcon: Icon(Icons.edit),
                   child: Text('Edit'),
                   onPressed: () async {
                     final r = await context.push(
-                      (_) => EditPage(method: widget.method),
+                      (_) => EditPage(method: widget.method!),
                     );
                     if (r == true && context.mounted) context.pop();
                   },

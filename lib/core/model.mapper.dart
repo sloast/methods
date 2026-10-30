@@ -26,8 +26,8 @@ class MethodCardMapper extends ClassMapperBase<MethodCard> {
   static const Field<MethodCard, int> _f$id = Field('id', _$id);
   static fsrs.Card _$card(MethodCard v) => v.card;
   static const Field<MethodCard, fsrs.Card> _f$card = Field('card', _$card);
-  static int _$deck(MethodCard v) => v.deck;
-  static const Field<MethodCard, int> _f$deck = Field('deck', _$deck);
+  static int _$method(MethodCard v) => v.method;
+  static const Field<MethodCard, int> _f$method = Field('method', _$method);
   static CardType _$type(MethodCard v) => v.type;
   static const Field<MethodCard, CardType> _f$type = Field('type', _$type);
   static int _$placeBell(MethodCard v) => v.placeBell;
@@ -44,7 +44,7 @@ class MethodCardMapper extends ClassMapperBase<MethodCard> {
   final MappableFields<MethodCard> fields = const {
     #id: _f$id,
     #card: _f$card,
-    #deck: _f$deck,
+    #method: _f$method,
     #type: _f$type,
     #placeBell: _f$placeBell,
     #paused: _f$paused,
@@ -55,7 +55,7 @@ class MethodCardMapper extends ClassMapperBase<MethodCard> {
     return MethodCard(
       id: data.dec(_f$id),
       card: data.dec(_f$card),
-      deck: data.dec(_f$deck),
+      method: data.dec(_f$method),
       type: data.dec(_f$type),
       placeBell: data.dec(_f$placeBell),
       paused: data.dec(_f$paused),
@@ -126,7 +126,7 @@ abstract class MethodCardCopyWith<$R, $In extends MethodCard, $Out>
   $R call({
     int? id,
     fsrs.Card? card,
-    int? deck,
+    int? method,
     CardType? type,
     int? placeBell,
     bool? paused,
@@ -147,7 +147,7 @@ class _MethodCardCopyWithImpl<$R, $Out>
   $R call({
     int? id,
     fsrs.Card? card,
-    int? deck,
+    int? method,
     CardType? type,
     int? placeBell,
     bool? paused,
@@ -156,7 +156,7 @@ class _MethodCardCopyWithImpl<$R, $Out>
     FieldCopyWithData({
       if (id != null) #id: id,
       if (card != null) #card: card,
-      if (deck != null) #deck: deck,
+      if (method != null) #method: method,
       if (type != null) #type: type,
       if (placeBell != null) #placeBell: placeBell,
       if (paused != null) #paused: paused,
@@ -167,7 +167,7 @@ class _MethodCardCopyWithImpl<$R, $Out>
   MethodCard $make(CopyWithData data) => MethodCard(
     id: data.get(#id, or: $value.id),
     card: data.get(#card, or: $value.card),
-    deck: data.get(#deck, or: $value.deck),
+    method: data.get(#method, or: $value.method),
     type: data.get(#type, or: $value.type),
     placeBell: data.get(#placeBell, or: $value.placeBell),
     paused: data.get(#paused, or: $value.paused),
@@ -180,144 +180,6 @@ class _MethodCardCopyWithImpl<$R, $Out>
   ) => _MethodCardCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
-class MethodDeckMapper extends ClassMapperBase<MethodDeck> {
-  MethodDeckMapper._();
-
-  static MethodDeckMapper? _instance;
-  static MethodDeckMapper ensureInitialized() {
-    if (_instance == null) {
-      MapperContainer.globals.use(_instance = MethodDeckMapper._());
-    }
-    return _instance!;
-  }
-
-  @override
-  final String id = 'MethodDeck';
-
-  static int _$id(MethodDeck v) => v.id;
-  static const Field<MethodDeck, int> _f$id = Field('id', _$id);
-  static String _$name(MethodDeck v) => v.name;
-  static const Field<MethodDeck, String> _f$name = Field('name', _$name);
-  static int _$method(MethodDeck v) => v.method;
-  static const Field<MethodDeck, int> _f$method = Field('method', _$method);
-  static bool _$isCustomMethod(MethodDeck v) => v.isCustomMethod;
-  static const Field<MethodDeck, bool> _f$isCustomMethod = Field(
-    'isCustomMethod',
-    _$isCustomMethod,
-  );
-
-  @override
-  final MappableFields<MethodDeck> fields = const {
-    #id: _f$id,
-    #name: _f$name,
-    #method: _f$method,
-    #isCustomMethod: _f$isCustomMethod,
-  };
-
-  static MethodDeck _instantiate(DecodingData data) {
-    return MethodDeck(
-      id: data.dec(_f$id),
-      name: data.dec(_f$name),
-      method: data.dec(_f$method),
-      isCustomMethod: data.dec(_f$isCustomMethod),
-    );
-  }
-
-  @override
-  final Function instantiate = _instantiate;
-
-  static MethodDeck fromMap(Map<String, dynamic> map) {
-    return ensureInitialized().decodeMap<MethodDeck>(map);
-  }
-
-  static MethodDeck fromJson(String json) {
-    return ensureInitialized().decodeJson<MethodDeck>(json);
-  }
-}
-
-mixin MethodDeckMappable {
-  String toJson() {
-    return MethodDeckMapper.ensureInitialized().encodeJson<MethodDeck>(
-      this as MethodDeck,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return MethodDeckMapper.ensureInitialized().encodeMap<MethodDeck>(
-      this as MethodDeck,
-    );
-  }
-
-  MethodDeckCopyWith<MethodDeck, MethodDeck, MethodDeck> get copyWith =>
-      _MethodDeckCopyWithImpl<MethodDeck, MethodDeck>(
-        this as MethodDeck,
-        $identity,
-        $identity,
-      );
-  @override
-  String toString() {
-    return MethodDeckMapper.ensureInitialized().stringifyValue(
-      this as MethodDeck,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return MethodDeckMapper.ensureInitialized().equalsValue(
-      this as MethodDeck,
-      other,
-    );
-  }
-
-  @override
-  int get hashCode {
-    return MethodDeckMapper.ensureInitialized().hashValue(this as MethodDeck);
-  }
-}
-
-extension MethodDeckValueCopy<$R, $Out>
-    on ObjectCopyWith<$R, MethodDeck, $Out> {
-  MethodDeckCopyWith<$R, MethodDeck, $Out> get $asMethodDeck =>
-      $base.as((v, t, t2) => _MethodDeckCopyWithImpl<$R, $Out>(v, t, t2));
-}
-
-abstract class MethodDeckCopyWith<$R, $In extends MethodDeck, $Out>
-    implements ClassCopyWith<$R, $In, $Out> {
-  $R call({int? id, String? name, int? method, bool? isCustomMethod});
-  MethodDeckCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
-}
-
-class _MethodDeckCopyWithImpl<$R, $Out>
-    extends ClassCopyWithBase<$R, MethodDeck, $Out>
-    implements MethodDeckCopyWith<$R, MethodDeck, $Out> {
-  _MethodDeckCopyWithImpl(super.value, super.then, super.then2);
-
-  @override
-  late final ClassMapperBase<MethodDeck> $mapper =
-      MethodDeckMapper.ensureInitialized();
-  @override
-  $R call({int? id, String? name, int? method, bool? isCustomMethod}) => $apply(
-    FieldCopyWithData({
-      if (id != null) #id: id,
-      if (name != null) #name: name,
-      if (method != null) #method: method,
-      if (isCustomMethod != null) #isCustomMethod: isCustomMethod,
-    }),
-  );
-  @override
-  MethodDeck $make(CopyWithData data) => MethodDeck(
-    id: data.get(#id, or: $value.id),
-    name: data.get(#name, or: $value.name),
-    method: data.get(#method, or: $value.method),
-    isCustomMethod: data.get(#isCustomMethod, or: $value.isCustomMethod),
-  );
-
-  @override
-  MethodDeckCopyWith<$R2, MethodDeck, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _MethodDeckCopyWithImpl<$R2, $Out2>($value, $cast, t);
-}
-
 class MethodMapper extends ClassMapperBase<Method> {
   MethodMapper._();
 
@@ -325,6 +187,7 @@ class MethodMapper extends ClassMapperBase<Method> {
   static MethodMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = MethodMapper._());
+      MethodDataMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -334,37 +197,23 @@ class MethodMapper extends ClassMapperBase<Method> {
 
   static int _$id(Method v) => v.id;
   static const Field<Method, int> _f$id = Field('id', _$id);
-  static String _$name(Method v) => v.name;
-  static const Field<Method, String> _f$name = Field('name', _$name);
-  static String _$placeNotation(Method v) => v.placeNotation;
-  static const Field<Method, String> _f$placeNotation = Field(
-    'placeNotation',
-    _$placeNotation,
-  );
-  static int _$stage(Method v) => v.stage;
-  static const Field<Method, int> _f$stage = Field('stage', _$stage);
-  static bool _$isCustomMethod(Method v) => v.isCustomMethod;
-  static const Field<Method, bool> _f$isCustomMethod = Field(
-    'isCustomMethod',
-    _$isCustomMethod,
-  );
+  static MethodData _$data(Method v) => v.data;
+  static const Field<Method, MethodData> _f$data = Field('data', _$data);
+  static bool _$hasDeck(Method v) => v.hasDeck;
+  static const Field<Method, bool> _f$hasDeck = Field('hasDeck', _$hasDeck);
 
   @override
   final MappableFields<Method> fields = const {
     #id: _f$id,
-    #name: _f$name,
-    #placeNotation: _f$placeNotation,
-    #stage: _f$stage,
-    #isCustomMethod: _f$isCustomMethod,
+    #data: _f$data,
+    #hasDeck: _f$hasDeck,
   };
 
   static Method _instantiate(DecodingData data) {
     return Method(
       id: data.dec(_f$id),
-      name: data.dec(_f$name),
-      placeNotation: data.dec(_f$placeNotation),
-      stage: data.dec(_f$stage),
-      isCustomMethod: data.dec(_f$isCustomMethod),
+      data: data.dec(_f$data),
+      hasDeck: data.dec(_f$hasDeck),
     );
   }
 
@@ -414,13 +263,8 @@ extension MethodValueCopy<$R, $Out> on ObjectCopyWith<$R, Method, $Out> {
 
 abstract class MethodCopyWith<$R, $In extends Method, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({
-    int? id,
-    String? name,
-    String? placeNotation,
-    int? stage,
-    bool? isCustomMethod,
-  });
+  MethodDataCopyWith<$R, MethodData, MethodData> get data;
+  $R call({int? id, MethodData? data, bool? hasDeck});
   MethodCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -431,32 +275,171 @@ class _MethodCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Method, $Out>
   @override
   late final ClassMapperBase<Method> $mapper = MethodMapper.ensureInitialized();
   @override
-  $R call({
-    int? id,
-    String? name,
-    String? placeNotation,
-    int? stage,
-    bool? isCustomMethod,
-  }) => $apply(
+  MethodDataCopyWith<$R, MethodData, MethodData> get data =>
+      $value.data.copyWith.$chain((v) => call(data: v));
+  @override
+  $R call({int? id, MethodData? data, bool? hasDeck}) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
-      if (name != null) #name: name,
-      if (placeNotation != null) #placeNotation: placeNotation,
-      if (stage != null) #stage: stage,
-      if (isCustomMethod != null) #isCustomMethod: isCustomMethod,
+      if (data != null) #data: data,
+      if (hasDeck != null) #hasDeck: hasDeck,
     }),
   );
   @override
   Method $make(CopyWithData data) => Method(
     id: data.get(#id, or: $value.id),
-    name: data.get(#name, or: $value.name),
-    placeNotation: data.get(#placeNotation, or: $value.placeNotation),
-    stage: data.get(#stage, or: $value.stage),
-    isCustomMethod: data.get(#isCustomMethod, or: $value.isCustomMethod),
+    data: data.get(#data, or: $value.data),
+    hasDeck: data.get(#hasDeck, or: $value.hasDeck),
   );
 
   @override
   MethodCopyWith<$R2, Method, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
       _MethodCopyWithImpl<$R2, $Out2>($value, $cast, t);
+}
+
+class MethodDataMapper extends ClassMapperBase<MethodData> {
+  MethodDataMapper._();
+
+  static MethodDataMapper? _instance;
+  static MethodDataMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = MethodDataMapper._());
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'MethodData';
+
+  static String _$name(MethodData v) => v.name;
+  static const Field<MethodData, String> _f$name = Field('name', _$name);
+  static String _$placeNotation(MethodData v) => v.placeNotation;
+  static const Field<MethodData, String> _f$placeNotation = Field(
+    'placeNotation',
+    _$placeNotation,
+  );
+  static int _$stage(MethodData v) => v.stage;
+  static const Field<MethodData, int> _f$stage = Field('stage', _$stage);
+  static int? _$libraryId(MethodData v) => v.libraryId;
+  static const Field<MethodData, int> _f$libraryId = Field(
+    'libraryId',
+    _$libraryId,
+  );
+
+  @override
+  final MappableFields<MethodData> fields = const {
+    #name: _f$name,
+    #placeNotation: _f$placeNotation,
+    #stage: _f$stage,
+    #libraryId: _f$libraryId,
+  };
+
+  static MethodData _instantiate(DecodingData data) {
+    return MethodData(
+      name: data.dec(_f$name),
+      placeNotation: data.dec(_f$placeNotation),
+      stage: data.dec(_f$stage),
+      libraryId: data.dec(_f$libraryId),
+    );
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static MethodData fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<MethodData>(map);
+  }
+
+  static MethodData fromJson(String json) {
+    return ensureInitialized().decodeJson<MethodData>(json);
+  }
+}
+
+mixin MethodDataMappable {
+  String toJson() {
+    return MethodDataMapper.ensureInitialized().encodeJson<MethodData>(
+      this as MethodData,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return MethodDataMapper.ensureInitialized().encodeMap<MethodData>(
+      this as MethodData,
+    );
+  }
+
+  MethodDataCopyWith<MethodData, MethodData, MethodData> get copyWith =>
+      _MethodDataCopyWithImpl<MethodData, MethodData>(
+        this as MethodData,
+        $identity,
+        $identity,
+      );
+  @override
+  String toString() {
+    return MethodDataMapper.ensureInitialized().stringifyValue(
+      this as MethodData,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return MethodDataMapper.ensureInitialized().equalsValue(
+      this as MethodData,
+      other,
+    );
+  }
+
+  @override
+  int get hashCode {
+    return MethodDataMapper.ensureInitialized().hashValue(this as MethodData);
+  }
+}
+
+extension MethodDataValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, MethodData, $Out> {
+  MethodDataCopyWith<$R, MethodData, $Out> get $asMethodData =>
+      $base.as((v, t, t2) => _MethodDataCopyWithImpl<$R, $Out>(v, t, t2));
+}
+
+abstract class MethodDataCopyWith<$R, $In extends MethodData, $Out>
+    implements ClassCopyWith<$R, $In, $Out> {
+  $R call({String? name, String? placeNotation, int? stage, int? libraryId});
+  MethodDataCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
+}
+
+class _MethodDataCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, MethodData, $Out>
+    implements MethodDataCopyWith<$R, MethodData, $Out> {
+  _MethodDataCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<MethodData> $mapper =
+      MethodDataMapper.ensureInitialized();
+  @override
+  $R call({
+    String? name,
+    String? placeNotation,
+    int? stage,
+    Object? libraryId = $none,
+  }) => $apply(
+    FieldCopyWithData({
+      if (name != null) #name: name,
+      if (placeNotation != null) #placeNotation: placeNotation,
+      if (stage != null) #stage: stage,
+      if (libraryId != $none) #libraryId: libraryId,
+    }),
+  );
+  @override
+  MethodData $make(CopyWithData data) => MethodData(
+    name: data.get(#name, or: $value.name),
+    placeNotation: data.get(#placeNotation, or: $value.placeNotation),
+    stage: data.get(#stage, or: $value.stage),
+    libraryId: data.get(#libraryId, or: $value.libraryId),
+  );
+
+  @override
+  MethodDataCopyWith<$R2, MethodData, $Out2> $chain<$R2, $Out2>(
+    Then<$Out2, $R2> t,
+  ) => _MethodDataCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 

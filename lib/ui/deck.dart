@@ -10,9 +10,9 @@ import '../db/repo.dart';
 import '../util/util.dart';
 
 class DeckViewPage extends StatefulWidget {
-  const DeckViewPage({super.key, required this.deck});
+  const DeckViewPage({super.key, required this.method});
 
-  final MethodDeck deck;
+  final Method method;
 
   @override
   State<DeckViewPage> createState() => _DeckViewPageState();
@@ -27,15 +27,12 @@ class _DeckViewPageState extends State<DeckViewPage> {
   @override
   Widget build(BuildContext context) {
     void viewMethod() async {
-      final m = await repo.getMethodFromDeck(widget.deck);
-      if (context.mounted && m != null) {
-        context.push((_) => MethodViewPage(method: m));
-      }
+      context.push((_) => MethodViewPage(method: widget.method));
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.deck.name),
+        title: Text(widget.method.data.name),
         actionsPadding: .only(right: 8),
         actions: [
           IconButton(
@@ -64,7 +61,7 @@ class _DeckViewPageState extends State<DeckViewPage> {
                       ),
                     );
                     if (confirmed) {
-                      await repo.deleteDeck(widget.deck.id);
+                      await repo.deleteDeck(widget.method.id);
                       if (context.mounted) Navigator.pop(context);
                     }
                   } catch (e) {
@@ -87,7 +84,7 @@ class _DeckViewPageState extends State<DeckViewPage> {
         ],
       ),
       body: list(
-        repo.listCards(deckId: widget.deck.id),
+        repo.listCards(methodId: widget.method.id),
         (c) => Card(
           child: ListTile(
             title: Text(switch (c.type) {

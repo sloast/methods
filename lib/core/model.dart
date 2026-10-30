@@ -11,7 +11,7 @@ enum CardType { placeBell }
 class MethodCard with MethodCardMappable {
   final int id;
   final fsrs.Card card;
-  final int deck;
+  final int method;
   final CardType type;
   final int placeBell;
   final bool paused;
@@ -20,7 +20,7 @@ class MethodCard with MethodCardMappable {
   MethodCard({
     required this.id,
     required this.card,
-    required this.deck,
+    required this.method,
     required this.type,
     required this.placeBell,
     required this.paused,
@@ -29,34 +29,28 @@ class MethodCard with MethodCardMappable {
 }
 
 @MappableClass()
-class MethodDeck with MethodDeckMappable {
+class Method with MethodMappable {
   final int id;
-  final String name;
-  final int method;
-  final bool isCustomMethod;
+  final MethodData data;
+  final bool hasDeck;
 
-  MethodDeck({
-    required this.id,
-    required this.name,
-    required this.method,
-    required this.isCustomMethod,
-  });
+  Method({required this.id, required this.data, required this.hasDeck});
+
+  ParsedMethod parse() => data.parse();
 }
 
 @MappableClass()
-class Method with MethodMappable {
-  final int id;
+class MethodData with MethodDataMappable {
   final String name;
   final String placeNotation;
   final int stage;
-  final bool isCustomMethod;
+  final int? libraryId;
 
-  Method({
-    required this.id,
+  MethodData({
     required this.name,
     required this.placeNotation,
     required this.stage,
-    required this.isCustomMethod,
+    required this.libraryId,
   });
 
   ParsedMethod parse() => parsePlaceNotation(placeNotation);

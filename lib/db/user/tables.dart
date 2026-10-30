@@ -3,10 +3,10 @@ import 'package:fsrs/fsrs.dart' as fsrs;
 
 import '../../core/model.dart' show CardType;
 
-const tables = [Cards, Decks, CustomMethods, ReviewLogs];
+const tables = [Cards, Methods, ReviewLogs];
 
 @TableIndex(name: 'cardDue', columns: {#due})
-@TableIndex(name: 'cardDeck', columns: {#deck})
+@TableIndex(name: 'cardMethod', columns: {#method})
 class Cards extends Table {
   IntColumn get id => integer().autoIncrement()();
 
@@ -19,7 +19,8 @@ class Cards extends Table {
   DateTimeColumn get lastReview => dateTime().nullable()();
 
   // meta
-  IntColumn get deck => integer().references(Decks, #id, onDelete: .cascade)();
+  IntColumn get method =>
+      integer().references(Methods, #id, onDelete: .cascade)();
 
   TextColumn get type => textEnum<CardType>()();
   IntColumn get placeBell => integer()();
@@ -28,36 +29,34 @@ class Cards extends Table {
   BoolColumn get learned => boolean()();
 
   @override
-  bool get isStrict => true;
-}
-
-@TableIndex(name: 'deckMethod', columns: {#method, #custom})
-class Decks extends Table {
-  IntColumn get id => integer().autoIncrement()();
-
-  TextColumn get name => text()();
-
-  BoolColumn get custom => boolean()();
-  IntColumn get method => integer()();
-
-  TextColumn get settings => text()();
+  List<Set<Column>> get uniqueKeys => [
+    {method, type, placeBell},
+  ];
 
   @override
   bool get isStrict => true;
 }
 
-@TableIndex(name: 'customMethodPN', columns: {#placeNotation})
-class CustomMethods extends Table {
+@TableIndex(name: 'methodName', columns: {#name})
+@TableIndex(name: 'methodPlaceNotation', columns: {#placeNotation})
+class Methods extends Table {
   IntColumn get id => integer().autoIncrement()();
 
   TextColumn get name => text()();
   TextColumn get placeNotation => text()();
   IntColumn get stage => integer()();
 
+  IntColumn get libraryId => integer().nullable().unique()();
+
+  // Deck
+  BoolColumn get hasDeck => boolean()();
+  TextColumn get deckSettings => text().nullable()();
+
   @override
   bool get isStrict => true;
 }
 
+@TableIndex(name: 'reviewLogCard', columns: {#card})
 class ReviewLogs extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get card => integer().references(Cards, #id, onDelete: .cascade)();

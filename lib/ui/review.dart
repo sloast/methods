@@ -33,7 +33,6 @@ class _ReviewPageState extends State<ReviewPage> {
   late final Repository repo = context.read();
 
   MethodCard? mcard;
-  MethodDeck? deck;
   Method? method;
   ParsedMethod? parsedMethod;
 
@@ -48,24 +47,19 @@ class _ReviewPageState extends State<ReviewPage> {
     final next = await repo.nextCard();
     if (next == null) {
       if (mounted) {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("No more reviews")));
+        context.pop();
+        snackbar(context, "No more reviews");
       }
       return;
     }
-    final (c, d) = next;
-
-    if (d.method != method?.id) {
-      method = await repo.getMethod(id: d.method, custom: d.isCustomMethod);
-      parsedMethod = method?.parse();
-    }
+    final (c, m) = next;
 
     setState(() {
       mcard = c;
-      deck = d;
+      method = m;
+      parsedMethod = m.parse();
       state = .reviewing;
+      errors = 0;
     });
   }
 
@@ -105,14 +99,14 @@ class _ReviewPageState extends State<ReviewPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(method?.name ?? deck?.name ?? 'Review')),
+      appBar: AppBar(title: Text(method?.data.name ?? 'Review')),
       body: SafeArea(
         child: parsedMethod != null && method != null
             ? switch (state) {
                 .learning => Text('new'),
 
                 .reviewing => DrawBlueline(
-                  name: method!.name,
+                  name: method!.data.name,
                   method: parsedMethod!,
                   placeBell: mcard!.placeBell,
                   onDone: done,
@@ -207,9 +201,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   ],
                 ),
               }
-            : Text(
-                'ERROR: Method ${deck?.name} not found. Update the app or delete this deck.',
-              ),
+            : Text('Loading...'),
       ),
     );
   }
@@ -218,7 +210,7 @@ class _ReviewPageState extends State<ReviewPage> {
 class PracticePage extends StatefulWidget {
   PracticePage({super.key, required this.method, this.placeBell});
 
-  final Method method;
+  final MethodData method;
   final int? placeBell;
   late final parsed = method.parse();
 

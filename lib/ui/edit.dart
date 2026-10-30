@@ -19,8 +19,8 @@ class EditPage extends StatefulWidget {
 class _EditPageState extends State<EditPage> {
   late final Repository repo = context.read();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  late String? name = widget.method?.name;
-  late ParsedMethod? parsedMethod = widget.method?.placeNotation.map(
+  late String? name = widget.method?.data.name;
+  late ParsedMethod? parsedMethod = widget.method?.data.placeNotation.map(
     parsePlaceNotation,
   );
   Method? existingMethod;
@@ -36,24 +36,22 @@ class _EditPageState extends State<EditPage> {
       try {
         final method = widget.method;
         if (method == null) {
-          await repo.createCustomMethod(
+          await repo.createMethod(
             name: name,
             placeNotation: parsedMethod.placeNotation,
             stage: parsedMethod.stage,
           );
         } else {
-          await repo.updateCustomMethod(
+          await repo.updateMethod(
             method.copyWith(
-              name: name,
-              placeNotation: parsedMethod.placeNotation,
-              stage: parsedMethod.stage,
+              data: MethodData(
+                name: name,
+                placeNotation: parsedMethod.placeNotation,
+                stage: parsedMethod.stage,
+                libraryId: method.data.libraryId,
+              ),
             ),
           );
-          final deck = await repo.getDeck(
-            method: method.id,
-            isCustomMethod: method.isCustomMethod,
-          );
-          if (deck != null) await repo.updateDeck(deck.id, name: name);
         }
       } catch (e) {
         if (!context.mounted) return;
@@ -75,7 +73,7 @@ class _EditPageState extends State<EditPage> {
         appBar: AppBar(
           title: Text(
             widget.method != null
-                ? 'Edit ${widget.method?.name}'
+                ? 'Edit ${widget.method?.data.name}'
                 : 'New method',
           ),
           actions: [
@@ -105,7 +103,7 @@ class _EditPageState extends State<EditPage> {
                           border: OutlineInputBorder(),
                           labelText: 'Name',
                         ),
-                        initialValue: widget.method?.name,
+                        initialValue: widget.method?.data.name,
                         validator: (s) {
                           if (s?.isEmpty ?? true) {
                             return 'Cannot be empty';
@@ -122,10 +120,10 @@ class _EditPageState extends State<EditPage> {
                           border: OutlineInputBorder(),
                           labelText: 'Place notation',
                           errorText: existingMethod.map(
-                            (m) => 'Method already exists: ${m.name}',
+                            (m) => 'Method already exists: ${m.data.name}',
                           ),
                         ),
-                        initialValue: widget.method?.placeNotation,
+                        initialValue: widget.method?.data.placeNotation,
                         validator: (s) {
                           if (s?.isEmpty ?? true) {
                             return 'Cannot be empty';

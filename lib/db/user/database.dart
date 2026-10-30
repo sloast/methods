@@ -40,7 +40,7 @@ class UserDatabase extends _$UserDatabase {
   }
 
   static Future<String> getDbPath() async =>
-      p.join((await getApplicationDocumentsDirectory()).path, 'methods.sqlite');
+      p.join((await getApplicationSupportDirectory()).path, 'methods.sqlite');
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -72,14 +72,36 @@ class UserDatabase extends _$UserDatabase {
     return cards.due.isSmallerThanValue(time) & cards.paused.not();
   }
 
-  Future<(Card, Deck)?> nextCard({bool unlearned = true}) async {
+  Future<List<Method>> listDecks() async {
+    final res = await (methods.select()..where((m) => m.hasDeck)).get();
+    return res;
+  }
+
+  Future<List<(Method, int)>> listDecksAndDueCount() async {
+    final cardCount = cards.id.count();
+    final res =
+        await ((methods.select()..where((m) => m.hasDeck)).join([
+                leftOuterJoin(
+                  cards,
+                  cards.method.equalsExp(methods.id) & cardFilter,
+                ),
+              ])
+              ..addColumns([cardCount])
+              ..groupBy([methods.id]))
+            .get();
+    return res.map((r) => (r.readTable(methods), r.read(cardCount)!)).toList();
+  }
+
+  Future<(Card, Method)?> nextCard({bool unlearned = true}) async {
     final query =
-        select(cards).join([innerJoin(decks, decks.id.equalsExp(cards.deck))])
+        select(
+            cards,
+          ).join([innerJoin(methods, methods.id.equalsExp(cards.method))])
           ..where(unlearned ? cardFilter : cardFilter & cards.learned)
           ..orderBy([OrderingTerm.asc(cards.lastReview, nulls: .first)])
           ..limit(1);
     final result = await query.getSingleOrNull();
     if (result == null) return null;
-    return (result.readTable(cards), result.readTable(decks));
+    return (result.readTable(cards), result.readTable(methods));
   }
 }

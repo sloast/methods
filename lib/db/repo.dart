@@ -18,173 +18,156 @@ class Repository {
   // Method
 
   Future<List<m.Method>> listMethods() async {
-    final stmt = udb.customMethods.select();
+    final stmt = udb.methods.select();
     final res = await (stmt..limit(100)).get();
-    return res.map(cmToMethod).toList();
+    return res.map(toMethod).toList();
   }
 
-  Future<List<m.Method>> searchMethods(String search, {int limit = 100}) async {
+  Future<List<m.MethodData>> searchMethodLibrary(
+    String search, {
+    int limit = 100,
+  }) async {
     search = search.replaceAll('*', '%').replaceAll('?', '_');
     final res = await sdb.search("$search%", limit).get();
-    return res.map((x) => x.toMethod()).toList();
+    return res.map(sToMethodData).toList();
   }
 
   Future<m.Method?> getMethodByPlaceNotation(String placeNotation) async {
     final res =
-        await (udb.select(udb.customMethods)
+        await (udb.methods.select()
               ..where((m) => m.placeNotation.equals(placeNotation))
               ..limit(1))
             .getSingleOrNull();
 
-    return res.map(cmToMethod);
+    return res.map(toMethod);
   }
 
-  Future<m.Method?> getMethod({required int id, required bool custom}) async {
-    if (custom) {
-      return (await (udb.select(udb.customMethods)
-                ..where((m) => m.id.equals(id))
-                ..limit(1))
-              .getSingleOrNull())
-          ?.toMethod();
-    } else {
-      return (await sdb.get(id).getSingleOrNull())?.toMethod();
-    }
+  Future<m.Method?> getMethod(int id) async {
+    return (await (udb.methods.select()
+              ..where((m) => m.id.equals(id))
+              ..limit(1))
+            .getSingleOrNull())
+        ?.toMethod();
   }
 
-  Future<m.Method?> getMethodFromDeck(m.MethodDeck deck) =>
-      getMethod(id: deck.method, custom: deck.isCustomMethod);
+  Future<m.MethodData?> getLibraryMethod(int id) async {
+    return (await sdb.get(id).getSingleOrNull())?.toMethodData();
+  }
 
-  Future<m.Method> createCustomMethod({
+  Future<m.Method> createMethod({
     required String name,
     required String placeNotation,
     required int stage,
   }) async {
-    return cmToMethod(
-      await udb.customMethods.insertReturning(
-        CustomMethodsCompanion.insert(
+    return toMethod(
+      await udb.methods.insertReturning(
+        MethodsCompanion.insert(
           name: name,
           placeNotation: placeNotation,
           stage: stage,
+          hasDeck: false,
         ),
       ),
     );
   }
 
-  Future<void> updateCustomMethod(m.Method method) async {
-    await (udb.customMethods.update()..where((m) => m.id.equals(method.id)))
-        .write(
-          CustomMethodsCompanion.insert(
-            id: .new(method.id),
-            name: method.name,
-            placeNotation: method.placeNotation,
-            stage: method.stage,
-          ),
-        );
+  Future<void> updateMethod(m.Method method) async {
+    final row = Method(
+      id: method.id,
+      name: method.data.name,
+      placeNotation: method.data.placeNotation,
+      stage: method.data.stage,
+      libraryId: method.data.libraryId,
+      hasDeck: method.hasDeck,
+      deckSettings: null,
+    );
+    await (udb.methods.replaceOne(row));
   }
 
   // Deck
 
-  Future<List<m.MethodDeck>> listDecks() async {
-    final res = await (udb.select(udb.decks)).get();
-    return res.map(toDeck).toList();
+  Future<List<m.Method>> listDecks() async {
+    return (await udb.listDecks()).map(toMethod).toList();
   }
 
-  Future<List<(m.MethodDeck, int)>> listDecksAndDueCount() async {
-    final cardCount = udb.cards.id.count();
-    final res =
-        await (udb.select(udb.decks).join([
-                leftOuterJoin(
-                  udb.cards,
-                  udb.cards.deck.equalsExp(udb.decks.id) & udb.cardFilter,
-                ),
-              ])
-              ..addColumns([cardCount])
-              ..groupBy([udb.decks.id]))
-            .get();
-    return res
-        .map((r) => (toDeck(r.readTable(udb.decks)), r.read(cardCount)!))
+  Future<List<(m.Method, int)>> listDecksAndDueCount() async {
+    return (await udb.listDecksAndDueCount())
+        .map2((m, c) => (m.toMethod(), c))
         .toList();
   }
 
-  Future<m.MethodDeck> createDeck(
-    m.Method method, [
+  Future<m.Method> createDeck(
+    m.MethodData method, {
+    int? methodId,
     bool createCards = true,
-  ]) async {
-    final res = toDeck(
-      await udb.decks.insertReturning(
-        DecksCompanion.insert(
-          name: method.name,
-          custom: method.isCustomMethod,
-          method: method.id,
-          settings: '{}',
-        ),
-      ),
-    );
-    if (createCards) {
-      await this.createCards(
-        res.id,
-        parsePlaceNotation(method.placeNotation).insideBells,
-      );
-    }
-    return res;
-  }
-
-  Future<m.MethodDeck?> getDeck({
-    int? id,
-    int? method,
-    bool? isCustomMethod,
   }) async {
-    assert((id != null) != (method != null));
-    assert((method != null) == (isCustomMethod != null));
-
-    var qry = udb.select(udb.decks)..limit(1);
-    if (id != null) {
-      qry.where((d) => d.id.equals(id));
-    }
-    if (method != null && isCustomMethod != null) {
-      qry.where(
-        (d) => d.method.equals(method) & d.custom.equals(isCustomMethod),
+    return await udb.transaction(() async {
+      Method? m;
+      if (methodId != null) {
+        final x =
+            await (udb.methods.update()..where((m) => m.id.equals(methodId)))
+                .write(MethodsCompanion(hasDeck: .new(true)));
+        if (x == 1) {
+          m = await (udb.methods.select()..where((m) => m.id.equals(methodId)))
+              .getSingle();
+        } else {
+          assert(x == 0);
+        }
+      }
+      m ??= await udb.methods.insertReturning(
+        MethodsCompanion.insert(
+          name: method.name,
+          placeNotation: method.placeNotation,
+          stage: method.stage,
+          libraryId: .absentIfNull(method.libraryId),
+          hasDeck: true,
+        ),
       );
-    }
-    return (await qry.getSingleOrNull()).map(toDeck);
+
+      if (createCards) {
+        await this.createCards(
+          m.id,
+          parsePlaceNotation(method.placeNotation).insideBells,
+        );
+      }
+      return m.toMethod();
+    });
   }
 
-  Future<void> updateDeck(int id, {String? name, String? settings}) async {
-    await (udb.decks.update()..where((m) => m.id.equals(id))).write(
-      DecksCompanion(
-        name: .absentIfNull(name),
-        settings: .absentIfNull(settings),
-      ),
+  Future<void> updateDeck(int id, {String? settings}) async {
+    await (udb.methods.update()..where((m) => m.id.equals(id))).write(
+      MethodsCompanion(deckSettings: .absentIfNull(settings)),
     );
   }
 
   Future<void> deleteDeck(int id) async {
-    await udb.decks.deleteWhere((d) => d.id.equals(id));
+    // TODO: handle custom methods better
+    await udb.methods.deleteWhere((m) => m.id.equals(id));
   }
 
   // Card
 
-  Future<List<m.MethodCard>> listCards({int? deckId}) async {
+  Future<List<m.MethodCard>> listCards({int? methodId}) async {
     final query = udb.select(udb.cards);
-    if (deckId != null) query.where((c) => c.deck.equals(deckId));
+    if (methodId != null) query.where((c) => c.method.equals(methodId));
     return (await query.get()).map(toCard).toList();
   }
 
-  Future<(m.MethodCard, m.MethodDeck)?> nextCard() async {
+  Future<(m.MethodCard, m.Method)?> nextCard() async {
     final res = await udb.nextCard(unlearned: true);
     if (res == null) return null;
-    final (c, d) = res;
+    final (c, m) = res;
 
-    return (c.toCard(), d.toDeck());
+    return (c.toCard(), m.toMethod());
   }
 
-  Future<void> createCards(int deck, List<int> placeBells) async {
+  Future<void> createCards(int method, List<int> placeBells) async {
     await udb.cards.insertAll(
       placeBells.map(
         (x) => CardsCompanion.insert(
           state: .learning,
           due: .now(),
-          deck: deck,
+          method: method,
           type: .placeBell,
           placeBell: x,
           paused: false,
@@ -226,35 +209,31 @@ class Repository {
   }
 
   // Conversions
-  m.Method sToMethod(s.Method m) => m.toMethod();
-  m.Method cmToMethod(CustomMethod m) => m.toMethod();
-  m.MethodDeck toDeck(Deck d) => d.toDeck();
+  m.MethodData sToMethodData(s.Method m) => m.toMethodData();
+  m.Method toMethod(Method m) => m.toMethod();
   m.MethodCard toCard(Card c) => c.toCard();
 }
 
-extension ToMethod on s.Method {
-  m.Method toMethod() => m.Method(
-    id: id,
+extension SToMethod on s.Method {
+  m.MethodData toMethodData() => m.MethodData(
     name: name,
     placeNotation: placeNotation,
     stage: stage,
-    isCustomMethod: false,
+    libraryId: id,
   );
 }
 
-extension CMToMethod on CustomMethod {
+extension UToMethod on Method {
   m.Method toMethod() => m.Method(
     id: id,
-    name: name,
-    placeNotation: placeNotation,
-    stage: stage,
-    isCustomMethod: true,
+    data: m.MethodData(
+      name: name,
+      placeNotation: placeNotation,
+      stage: stage,
+      libraryId: libraryId,
+    ),
+    hasDeck: hasDeck,
   );
-}
-
-extension ToDeck on Deck {
-  m.MethodDeck toDeck() =>
-      m.MethodDeck(id: id, name: name, method: method, isCustomMethod: custom);
 }
 
 extension ToCard on Card {
@@ -269,7 +248,7 @@ extension ToCard on Card {
       due: due,
       lastReview: lastReview,
     ),
-    deck: deck,
+    method: method,
     type: type,
     placeBell: placeBell,
     paused: paused,

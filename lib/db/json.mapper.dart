@@ -22,10 +22,16 @@ class JsonRepoMapper extends ClassMapperBase<JsonRepo> {
   @override
   final String id = 'JsonRepo';
 
-  static List<Map<String, dynamic>> _$decks(JsonRepo v) => v.decks;
+  static List<Map<String, dynamic>>? _$decks(JsonRepo v) => v.decks;
   static const Field<JsonRepo, List<Map<String, dynamic>>> _f$decks = Field(
     'decks',
     _$decks,
+    opt: true,
+  );
+  static List<Map<String, dynamic>>? _$methods(JsonRepo v) => v.methods;
+  static const Field<JsonRepo, List<Map<String, dynamic>>> _f$methods = Field(
+    'methods',
+    _$methods,
   );
   static List<Map<String, dynamic>> _$cards(JsonRepo v) => v.cards;
   static const Field<JsonRepo, List<Map<String, dynamic>>> _f$cards = Field(
@@ -39,15 +45,17 @@ class JsonRepoMapper extends ClassMapperBase<JsonRepo> {
   @override
   final MappableFields<JsonRepo> fields = const {
     #decks: _f$decks,
+    #methods: _f$methods,
     #cards: _f$cards,
     #reviewLogs: _f$reviewLogs,
   };
 
   static JsonRepo _instantiate(DecodingData data) {
     return JsonRepo(
-      data.dec(_f$decks),
-      data.dec(_f$cards),
-      data.dec(_f$reviewLogs),
+      decks: data.dec(_f$decks),
+      methods: data.dec(_f$methods),
+      cards: data.dec(_f$cards),
+      reviewLogs: data.dec(_f$reviewLogs),
     );
   }
 
@@ -112,8 +120,14 @@ abstract class JsonRepoCopyWith<$R, $In extends JsonRepo, $Out>
     $R,
     Map<String, dynamic>,
     ObjectCopyWith<$R, Map<String, dynamic>, Map<String, dynamic>>
-  >
+  >?
   get decks;
+  ListCopyWith<
+    $R,
+    Map<String, dynamic>,
+    ObjectCopyWith<$R, Map<String, dynamic>, Map<String, dynamic>>
+  >?
+  get methods;
   ListCopyWith<
     $R,
     Map<String, dynamic>,
@@ -128,6 +142,7 @@ abstract class JsonRepoCopyWith<$R, $In extends JsonRepo, $Out>
   get reviewLogs;
   $R call({
     List<Map<String, dynamic>>? decks,
+    List<Map<String, dynamic>>? methods,
     List<Map<String, dynamic>>? cards,
     List<Map<String, dynamic>>? reviewLogs,
   });
@@ -147,12 +162,27 @@ class _JsonRepoCopyWithImpl<$R, $Out>
     $R,
     Map<String, dynamic>,
     ObjectCopyWith<$R, Map<String, dynamic>, Map<String, dynamic>>
-  >
-  get decks => ListCopyWith(
-    $value.decks,
-    (v, t) => ObjectCopyWith(v, $identity, t),
-    (v) => call(decks: v),
-  );
+  >?
+  get decks => $value.decks != null
+      ? ListCopyWith(
+          $value.decks!,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(decks: v),
+        )
+      : null;
+  @override
+  ListCopyWith<
+    $R,
+    Map<String, dynamic>,
+    ObjectCopyWith<$R, Map<String, dynamic>, Map<String, dynamic>>
+  >?
+  get methods => $value.methods != null
+      ? ListCopyWith(
+          $value.methods!,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(methods: v),
+        )
+      : null;
   @override
   ListCopyWith<
     $R,
@@ -177,21 +207,24 @@ class _JsonRepoCopyWithImpl<$R, $Out>
   );
   @override
   $R call({
-    List<Map<String, dynamic>>? decks,
+    Object? decks = $none,
+    Object? methods = $none,
     List<Map<String, dynamic>>? cards,
     List<Map<String, dynamic>>? reviewLogs,
   }) => $apply(
     FieldCopyWithData({
-      if (decks != null) #decks: decks,
+      if (decks != $none) #decks: decks,
+      if (methods != $none) #methods: methods,
       if (cards != null) #cards: cards,
       if (reviewLogs != null) #reviewLogs: reviewLogs,
     }),
   );
   @override
   JsonRepo $make(CopyWithData data) => JsonRepo(
-    data.get(#decks, or: $value.decks),
-    data.get(#cards, or: $value.cards),
-    data.get(#reviewLogs, or: $value.reviewLogs),
+    decks: data.get(#decks, or: $value.decks),
+    methods: data.get(#methods, or: $value.methods),
+    cards: data.get(#cards, or: $value.cards),
+    reviewLogs: data.get(#reviewLogs, or: $value.reviewLogs),
   );
 
   @override

@@ -49,11 +49,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   late final Repository repo = context.read();
   late final Prefs prefs = context.read();
 
-  late final allMethods = repo.searchMethods("", limit: 99999);
+  late final allMethods = repo.searchMethodLibrary("", limit: 99999);
   final searchController = TextEditingController();
   String? searchQuery;
-  late Future<List<(MethodDeck, int)>> decks;
-  late Future<List<Method>> methods;
+  late Future<List<(Method, int)>> decks;
+  late Future<List<MethodData>> libraryMethods;
 
   int currentPageIndex = 0;
 
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void runSearch([String? query]) {
     final q = (searchQuery = query ?? searchQuery ?? '').toLowerCase();
     setState(() {
-      methods = () async {
+      libraryMethods = () async {
         final a = await allMethods;
 
         if (kIsWeb) {
@@ -144,11 +144,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // Decks
     final decksPage = list(
       decks,
-      t2<MethodDeck, int, Widget>(
-        (d, i) => Card(
+      t2<Method, int, Widget>(
+        (m, i) => Card(
           child: ListTile(
             leading: Icon(Icons.my_library_books_outlined),
-            title: Text(d.name),
+            title: Text(m.data.name),
             subtitle: Text(
               "$i to review",
               style: .new(
@@ -159,19 +159,14 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               ),
             ),
             onTap: () async {
-              final m = await repo.getMethodFromDeck(d);
               if (context.mounted) {
-                if (m != null) {
-                  context.push((_) => MethodViewPage(method: m));
-                } else {
-                  error(context, 'Method not found');
-                }
+                context.push((_) => MethodViewPage(method: m));
               }
             },
             trailing: IconButton(
               icon: Icon(Icons.settings),
               onPressed: () =>
-                  context.push((_) => DeckViewPage(deck: d)).then(reload),
+                  context.push((_) => DeckViewPage(method: m)).then(reload),
             ),
           ),
         ),
@@ -186,14 +181,16 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     // Methods
     final methodsPage = list(
-      methods,
+      libraryMethods,
       (m) => Card(
         child: ListTile(
           leading: stageIcon(m.stage),
           title: Text(m.name),
           onTap: () async => Navigator.of(context)
               .push(
-                MaterialPageRoute(builder: (ctx) => MethodViewPage(method: m)),
+                MaterialPageRoute(
+                  builder: (ctx) => MethodViewPage.library(methodData: m),
+                ),
               )
               .then(reload),
           trailing: IconButton(
@@ -269,6 +266,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     if (file == null) return;
                     await repo.udb.importJson(
                       await utf8.decodeStream(file.readAsByteStream()),
+                      repo.sdb,
                     );
                   } catch (e) {
                     if (!context.mounted) return;

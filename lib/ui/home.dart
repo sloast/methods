@@ -332,7 +332,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   suffixIcon: IconButton(
                     onPressed: () {
                       searchController.clear();
-                      reload();
+                      runSearch('');
                     },
                     icon: Icon(Icons.clear),
                   ),

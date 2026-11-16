@@ -109,10 +109,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     Widget stageIcon(int stage, {Widget? child}) => DecoratedBox(
       decoration: BoxDecoration(
         color: switch (stage) {
-          3 => Colors.pink.shade200,
-          4 => Colors.purple,
-          5 => Colors.indigoAccent,
-          6 => Colors.blue,
+          4 => Colors.pink.shade200,
+          5 => Colors.purple,
+          6 => Colors.indigoAccent,
           7 => Colors.cyan,
           8 => Colors.green.shade600,
           9 => Colors.lightGreen.shade300,

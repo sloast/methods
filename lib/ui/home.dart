@@ -266,7 +266,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     if (file == null) return;
                     await repo.udb.importJson(
                       await utf8.decodeStream(file.readAsByteStream()),
-                      repo.sdb,
                     );
                   } catch (e) {
                     if (!context.mounted) return;

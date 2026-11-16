@@ -8,51 +8,43 @@
 
 part of 'json.dart';
 
-class JsonRepoMapper extends ClassMapperBase<JsonRepo> {
-  JsonRepoMapper._();
+class JsonExportMapper extends ClassMapperBase<JsonExport> {
+  JsonExportMapper._();
 
-  static JsonRepoMapper? _instance;
-  static JsonRepoMapper ensureInitialized() {
+  static JsonExportMapper? _instance;
+  static JsonExportMapper ensureInitialized() {
     if (_instance == null) {
-      MapperContainer.globals.use(_instance = JsonRepoMapper._());
+      MapperContainer.globals.use(_instance = JsonExportMapper._());
     }
     return _instance!;
   }
 
   @override
-  final String id = 'JsonRepo';
+  final String id = 'JsonExport';
 
-  static List<Map<String, dynamic>>? _$decks(JsonRepo v) => v.decks;
-  static const Field<JsonRepo, List<Map<String, dynamic>>> _f$decks = Field(
-    'decks',
-    _$decks,
-    opt: true,
-  );
-  static List<Map<String, dynamic>>? _$methods(JsonRepo v) => v.methods;
-  static const Field<JsonRepo, List<Map<String, dynamic>>> _f$methods = Field(
+  static List<Map<String, dynamic>> _$methods(JsonExport v) => v.methods;
+  static const Field<JsonExport, List<Map<String, dynamic>>> _f$methods = Field(
     'methods',
     _$methods,
   );
-  static List<Map<String, dynamic>> _$cards(JsonRepo v) => v.cards;
-  static const Field<JsonRepo, List<Map<String, dynamic>>> _f$cards = Field(
+  static List<Map<String, dynamic>> _$cards(JsonExport v) => v.cards;
+  static const Field<JsonExport, List<Map<String, dynamic>>> _f$cards = Field(
     'cards',
     _$cards,
   );
-  static List<Map<String, dynamic>> _$reviewLogs(JsonRepo v) => v.reviewLogs;
-  static const Field<JsonRepo, List<Map<String, dynamic>>> _f$reviewLogs =
+  static List<Map<String, dynamic>> _$reviewLogs(JsonExport v) => v.reviewLogs;
+  static const Field<JsonExport, List<Map<String, dynamic>>> _f$reviewLogs =
       Field('reviewLogs', _$reviewLogs);
 
   @override
-  final MappableFields<JsonRepo> fields = const {
-    #decks: _f$decks,
+  final MappableFields<JsonExport> fields = const {
     #methods: _f$methods,
     #cards: _f$cards,
     #reviewLogs: _f$reviewLogs,
   };
 
-  static JsonRepo _instantiate(DecodingData data) {
-    return JsonRepo(
-      decks: data.dec(_f$decks),
+  static JsonExport _instantiate(DecodingData data) {
+    return JsonExport(
       methods: data.dec(_f$methods),
       cards: data.dec(_f$cards),
       reviewLogs: data.dec(_f$reviewLogs),
@@ -62,71 +54,68 @@ class JsonRepoMapper extends ClassMapperBase<JsonRepo> {
   @override
   final Function instantiate = _instantiate;
 
-  static JsonRepo fromMap(Map<String, dynamic> map) {
-    return ensureInitialized().decodeMap<JsonRepo>(map);
+  static JsonExport fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<JsonExport>(map);
   }
 
-  static JsonRepo fromJson(String json) {
-    return ensureInitialized().decodeJson<JsonRepo>(json);
+  static JsonExport fromJson(String json) {
+    return ensureInitialized().decodeJson<JsonExport>(json);
   }
 }
 
-mixin JsonRepoMappable {
+mixin JsonExportMappable {
   String toJson() {
-    return JsonRepoMapper.ensureInitialized().encodeJson<JsonRepo>(
-      this as JsonRepo,
+    return JsonExportMapper.ensureInitialized().encodeJson<JsonExport>(
+      this as JsonExport,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return JsonRepoMapper.ensureInitialized().encodeMap<JsonRepo>(
-      this as JsonRepo,
+    return JsonExportMapper.ensureInitialized().encodeMap<JsonExport>(
+      this as JsonExport,
     );
   }
 
-  JsonRepoCopyWith<JsonRepo, JsonRepo, JsonRepo> get copyWith =>
-      _JsonRepoCopyWithImpl<JsonRepo, JsonRepo>(
-        this as JsonRepo,
+  JsonExportCopyWith<JsonExport, JsonExport, JsonExport> get copyWith =>
+      _JsonExportCopyWithImpl<JsonExport, JsonExport>(
+        this as JsonExport,
         $identity,
         $identity,
       );
   @override
   String toString() {
-    return JsonRepoMapper.ensureInitialized().stringifyValue(this as JsonRepo);
+    return JsonExportMapper.ensureInitialized().stringifyValue(
+      this as JsonExport,
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return JsonRepoMapper.ensureInitialized().equalsValue(
-      this as JsonRepo,
+    return JsonExportMapper.ensureInitialized().equalsValue(
+      this as JsonExport,
       other,
     );
   }
 
   @override
   int get hashCode {
-    return JsonRepoMapper.ensureInitialized().hashValue(this as JsonRepo);
+    return JsonExportMapper.ensureInitialized().hashValue(this as JsonExport);
   }
 }
 
-extension JsonRepoValueCopy<$R, $Out> on ObjectCopyWith<$R, JsonRepo, $Out> {
-  JsonRepoCopyWith<$R, JsonRepo, $Out> get $asJsonRepo =>
-      $base.as((v, t, t2) => _JsonRepoCopyWithImpl<$R, $Out>(v, t, t2));
+extension JsonExportValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, JsonExport, $Out> {
+  JsonExportCopyWith<$R, JsonExport, $Out> get $asJsonExport =>
+      $base.as((v, t, t2) => _JsonExportCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
-abstract class JsonRepoCopyWith<$R, $In extends JsonRepo, $Out>
+abstract class JsonExportCopyWith<$R, $In extends JsonExport, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   ListCopyWith<
     $R,
     Map<String, dynamic>,
     ObjectCopyWith<$R, Map<String, dynamic>, Map<String, dynamic>>
-  >?
-  get decks;
-  ListCopyWith<
-    $R,
-    Map<String, dynamic>,
-    ObjectCopyWith<$R, Map<String, dynamic>, Map<String, dynamic>>
-  >?
+  >
   get methods;
   ListCopyWith<
     $R,
@@ -141,48 +130,32 @@ abstract class JsonRepoCopyWith<$R, $In extends JsonRepo, $Out>
   >
   get reviewLogs;
   $R call({
-    List<Map<String, dynamic>>? decks,
     List<Map<String, dynamic>>? methods,
     List<Map<String, dynamic>>? cards,
     List<Map<String, dynamic>>? reviewLogs,
   });
-  JsonRepoCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
+  JsonExportCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _JsonRepoCopyWithImpl<$R, $Out>
-    extends ClassCopyWithBase<$R, JsonRepo, $Out>
-    implements JsonRepoCopyWith<$R, JsonRepo, $Out> {
-  _JsonRepoCopyWithImpl(super.value, super.then, super.then2);
+class _JsonExportCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, JsonExport, $Out>
+    implements JsonExportCopyWith<$R, JsonExport, $Out> {
+  _JsonExportCopyWithImpl(super.value, super.then, super.then2);
 
   @override
-  late final ClassMapperBase<JsonRepo> $mapper =
-      JsonRepoMapper.ensureInitialized();
+  late final ClassMapperBase<JsonExport> $mapper =
+      JsonExportMapper.ensureInitialized();
   @override
   ListCopyWith<
     $R,
     Map<String, dynamic>,
     ObjectCopyWith<$R, Map<String, dynamic>, Map<String, dynamic>>
-  >?
-  get decks => $value.decks != null
-      ? ListCopyWith(
-          $value.decks!,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(decks: v),
-        )
-      : null;
-  @override
-  ListCopyWith<
-    $R,
-    Map<String, dynamic>,
-    ObjectCopyWith<$R, Map<String, dynamic>, Map<String, dynamic>>
-  >?
-  get methods => $value.methods != null
-      ? ListCopyWith(
-          $value.methods!,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(methods: v),
-        )
-      : null;
+  >
+  get methods => ListCopyWith(
+    $value.methods,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(methods: v),
+  );
   @override
   ListCopyWith<
     $R,
@@ -207,29 +180,26 @@ class _JsonRepoCopyWithImpl<$R, $Out>
   );
   @override
   $R call({
-    Object? decks = $none,
-    Object? methods = $none,
+    List<Map<String, dynamic>>? methods,
     List<Map<String, dynamic>>? cards,
     List<Map<String, dynamic>>? reviewLogs,
   }) => $apply(
     FieldCopyWithData({
-      if (decks != $none) #decks: decks,
-      if (methods != $none) #methods: methods,
+      if (methods != null) #methods: methods,
       if (cards != null) #cards: cards,
       if (reviewLogs != null) #reviewLogs: reviewLogs,
     }),
   );
   @override
-  JsonRepo $make(CopyWithData data) => JsonRepo(
-    decks: data.get(#decks, or: $value.decks),
+  JsonExport $make(CopyWithData data) => JsonExport(
     methods: data.get(#methods, or: $value.methods),
     cards: data.get(#cards, or: $value.cards),
     reviewLogs: data.get(#reviewLogs, or: $value.reviewLogs),
   );
 
   @override
-  JsonRepoCopyWith<$R2, JsonRepo, $Out2> $chain<$R2, $Out2>(
+  JsonExportCopyWith<$R2, JsonExport, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
-  ) => _JsonRepoCopyWithImpl<$R2, $Out2>($value, $cast, t);
+  ) => _JsonExportCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 

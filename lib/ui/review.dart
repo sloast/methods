@@ -327,18 +327,18 @@ class _DrawBluelineState extends State<DrawBlueline> {
       BorderRadiusGeometry? radius,
       bool expand = true,
     }) {
-      final w = IconButton.outlined(
-        style: .new(
-          shape: .all(
-            border ??
-                RoundedRectangleBorder(
-                  borderRadius: radius ?? BorderRadius.circular(20),
-                ),
-          ),
-        ),
-        onPressed: () => input(direction),
+      final w = GestureDetector(
+        onTapDown: (_) => input(direction),
         onLongPress: () => longInput(direction),
-        icon: Icon(icon),
+        behavior: .opaque,
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.colorScheme.secondaryContainer,
+            border: .all(color: context.colorScheme.surface),
+            borderRadius: radius ?? BorderRadius.circular(20),
+          ),
+          child: Icon(icon),
+        ),
       );
       return expand ? Expanded(child: w) : w;
     }
@@ -400,55 +400,65 @@ class _DrawBluelineState extends State<DrawBlueline> {
               ),
             ),
           ),
-          SizedBox(
-            height: 100,
-            child: Row(
+          Container(
+            padding: .all(8),
+            child: Column(
               crossAxisAlignment: .stretch,
               children: [
-                makeButton(
-                  -1,
-                  Icons.keyboard_arrow_left_rounded,
-                  radius: .only(topLeft: .circular(20)),
+                SizedBox(
+                  height: 100,
+                  child: Row(
+                    crossAxisAlignment: .stretch,
+                    children: [
+                      makeButton(
+                        -1,
+                        Icons.keyboard_arrow_left_rounded,
+                        radius: .only(topLeft: .circular(20)),
+                      ),
+                      makeButton(
+                        1,
+                        Icons.keyboard_arrow_right_rounded,
+                        radius: .only(topRight: .circular(20)),
+                      ),
+                    ],
+                  ),
                 ),
-                makeButton(
-                  1,
-                  Icons.keyboard_arrow_right_rounded,
-                  radius: .only(topRight: .circular(20)),
+                SizedBox(
+                  height: 100,
+                  child: makeButton(
+                    0,
+                    Icons.keyboard_arrow_down_rounded,
+                    radius: .vertical(bottom: .circular(20)),
+                    expand: false,
+                  ),
+                ),
+                SizedBox(
+                  height: 100,
+                  child: prefs.manualFinish
+                      ? Padding(
+                          padding: .only(top: 25),
+                          child: OutlinedButton(
+                            style: .new(
+                              shape: .all(
+                                RoundedRectangleBorder(
+                                  borderRadius: .circular(20),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (step == rows.length - 1) {
+                                widget.onDone(errors);
+                              } else {
+                                error();
+                              }
+                            },
+                            child: Text('Done'),
+                          ),
+                        )
+                      : null,
                 ),
               ],
             ),
-          ),
-          SizedBox(
-            height: 100,
-            child: makeButton(
-              0,
-              Icons.keyboard_arrow_down_rounded,
-              radius: .vertical(bottom: .circular(20)),
-              expand: false,
-            ),
-          ),
-          SizedBox(
-            height: 100,
-            child: prefs.manualFinish
-                ? Padding(
-                    padding: .only(top: 25),
-                    child: OutlinedButton(
-                      style: .new(
-                        shape: .all(
-                          RoundedRectangleBorder(borderRadius: .circular(20)),
-                        ),
-                      ),
-                      onPressed: () {
-                        if (step == rows.length - 1) {
-                          widget.onDone(errors);
-                        } else {
-                          error();
-                        }
-                      },
-                      child: Text('Done'),
-                    ),
-                  )
-                : null,
           ),
         ],
       ),

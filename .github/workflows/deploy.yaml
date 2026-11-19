@@ -1,9 +1,9 @@
 name: Deploy web version
 
 on:
-  # push:
-  #   branches:
-  #     - master
+  push:
+    branches:
+      - master
   workflow_dispatch:
 
 permissions:
@@ -34,7 +34,7 @@ jobs:
         run: flutter pub get
 
       - name: Build
-        run: flutter build web --release --wasm --base-href "/${{ github.event.repository.name }}/"
+        run: flutter build web --release --wasm
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
